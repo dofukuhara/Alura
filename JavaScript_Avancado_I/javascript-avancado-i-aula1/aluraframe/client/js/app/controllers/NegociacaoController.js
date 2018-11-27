@@ -5,7 +5,9 @@ class NegociacaoController {
     
         this._inputData = $("#data")
         this._inputQuantidade = $("#quantidade")
-        this._inoputValor = $("#valor")
+        this._inputValor = $("#valor")
+
+        this._listNegociacoes = new ListaNegociacoes()
     }
 
     adiciona(event) {
@@ -44,18 +46,30 @@ class NegociacaoController {
         )
         */
 
-        let data = new Date(
-            ...this._inputData.value
-                .split('-')
-                .map((item, indice) => item - indice % 2)
-        )
+        this._listNegociacoes.adiciona(this._criaNegociacao())
+        this._limpaFormulario()
 
-        let negociacao = new Negociacao(
-            data,
+        console.log(this._listNegociacoes.negociacoes)
+    }
+
+    /*
+        Creating aux functions.
+        They were named with the preffix '_' to indicate to developers that those functions
+        can only be called inside this class.
+    */
+    _criaNegociacao() {
+        return new Negociacao(
+            DateHelper.textoParaData(this._inputData.value),
             this._inputQuantidade.value,
-            this._inoputValor.value
+            this._inputValor.value
         )
+    }
 
-        console.log(negociacao)
+    _limpaFormulario() {
+        this._inputData.value = ''
+        this._inputQuantidade.value = 1
+        this._inputValor.value = 0.0
+
+        this._inputData.focus()
     }
 }
