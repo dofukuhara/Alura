@@ -27,7 +27,7 @@ class DateHelper {
             input first and, if it is not in the right format, throw an exception informing it... 
             To do so, regex can be used to accomplish this verification
         */
-        if (! /\d{4}-\d{2}-\d{2}/.test(texto))
+        if (! /^\d{4}-\d{2}-\d{2}$/.test(texto))
             throw new Error('A data deve estar no formato aaaa-mm-dd')
 
         return new Date(
