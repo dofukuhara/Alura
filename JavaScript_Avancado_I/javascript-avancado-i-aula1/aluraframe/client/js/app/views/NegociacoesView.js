@@ -18,6 +18,14 @@ class NegociacoesView {
             - Função auto-invocável, que pode ser utilizada para criar escopo e, nesse caso, permitir
               com que expressão com mais de uma instrução seja executada
     */
+    /*
+        Ao invés de utilizar IIFEs, nesse caso podemos fazer utilização de programação funcional.
+        Neste caso, podemos utilizar o método reduce(), que irá processar um array e retornar um 
+        único resultado.
+        - array.reduce(function(variavelQueIraAcumularOValor, itemDoArray) 
+                                    { // return X }, 
+                                    parametroInicial de 'variavelQueIraAcumularOValor' )
+    */
     _template(model) {
         return `
             <table class="table table-hover table-bordered">
@@ -44,13 +52,9 @@ class NegociacoesView {
                 <tfoot>
                     <td colspan="3"></td>
                     <td>${
-                        (function(){
-                            let total = 0
-                            model.negociacoes.forEach( n =>
-                                total += n.volume
-                            )
-                            return total
-                        })()
+                        model.negociacoes.reduce(function(total, n) {
+                            return total + n.volume
+                        }, 0.0)
                     }</td>
                 </tfoot>
             </table>`
