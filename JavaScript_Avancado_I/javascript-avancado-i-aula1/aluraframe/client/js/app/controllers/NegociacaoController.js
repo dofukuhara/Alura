@@ -8,6 +8,14 @@ class NegociacaoController {
         this._inputValor = $("#valor")
 
         this._listNegociacoes = new ListaNegociacoes()
+
+        /*
+            Ao instanciar NegociacoesView, passamos no construtor o elemento do DOM ao qual essa view
+            será atrelada.
+            No método update de NegociacoesView, passamos a lista das negociacoes a ser exibida na view
+        */
+        this._negociacoesView = new NegociacoesView($("#negociacoesView"))
+        this._negociacoesView.update(this._listNegociacoes)
     }
 
     adiciona(event) {
@@ -49,7 +57,9 @@ class NegociacaoController {
         this._listNegociacoes.adiciona(this._criaNegociacao())
         this._limpaFormulario()
 
-        console.log(this._listNegociacoes.negociacoes)
+        // Além de chamar o método update() no construtor, iremos chamar em adiciona, pois aqui
+        // a lista sobre alterações.
+        this._negociacoesView.update(this._listNegociacoes)
     }
 
     /*
