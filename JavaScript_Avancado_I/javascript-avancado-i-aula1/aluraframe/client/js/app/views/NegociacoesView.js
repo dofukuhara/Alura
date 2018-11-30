@@ -12,6 +12,12 @@ class NegociacoesView {
         strings, referentes a cada item da lista. Ao utilizar esse join, iremos converter as strings do
         array em uma única string, possibilitando assim a inclusão desta na Template String.
     */
+    /*
+        Immediately-Invoked Function Expression (IIFE)
+            - (function() {})()
+            - Função auto-invocável, que pode ser utilizada para criar escopo e, nesse caso, permitir
+              com que expressão com mais de uma instrução seja executada
+    */
     _template(model) {
         return `
             <table class="table table-hover table-bordered">
@@ -36,6 +42,16 @@ class NegociacoesView {
                 </tbody>
                 
                 <tfoot>
+                    <td colspan="3"></td>
+                    <td>${
+                        (function(){
+                            let total = 0
+                            model.negociacoes.forEach( n =>
+                                total += n.volume
+                            )
+                            return total
+                        })()
+                    }</td>
                 </tfoot>
             </table>`
     }
