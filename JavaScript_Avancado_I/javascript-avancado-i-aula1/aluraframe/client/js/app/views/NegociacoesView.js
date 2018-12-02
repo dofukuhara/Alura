@@ -1,7 +1,7 @@
-class NegociacoesView {
+class NegociacoesView extends View{
     
     constructor(elemento) {
-        this._elemento = elemento
+        super(elemento)
     }
 
     /*
@@ -26,7 +26,7 @@ class NegociacoesView {
                                     { // return X }, 
                                     parametroInicial de 'variavelQueIraAcumularOValor' )
     */
-    _template(model) {
+    template(model) {
         return `
             <table class="table table-hover table-bordered">
                 <thead>
@@ -56,10 +56,5 @@ class NegociacoesView {
                     </td>
                 </tfoot>
             </table>`
-    }
-
-    update(model) {
-        // A propriedade innerHTML irá converter a string em elementos do DOM
-        this._elemento.innerHTML = this._template(model)
     }
 }
