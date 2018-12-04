@@ -1,5 +1,6 @@
 .DS_Store
 /FinancasK/*.iml
+/FinancasK/app/*.iml
 /FinancasK/.gradle
 /FinancasK/local.properties
 /FinancasK/.idea/libraries
