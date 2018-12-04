@@ -1,1 +1,10 @@
 .DS_Store
+/FinancasK/*.iml
+/FinancasK/.gradle
+/FinancasK/local.properties
+/FinancasK/.idea/libraries
+/FinancasK/.idea/modules.xml
+/FinancasK/.idea/workspace.xml
+/FinancasK/build
+/FinancasK/captures
+/FinancasK.externalNativeBuild
