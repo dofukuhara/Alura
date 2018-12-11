@@ -3,6 +3,10 @@
 /FinancasK/app/*.iml
 /FinancasK/.gradle
 /FinancasK/local.properties
+/FinancasK/.idea/caches
+/FinancasK/.idea/codeStyles
+/FinancasK/.idea/misc.xml
+/FinancasK/.idea/vcs.xml
 /FinancasK/.idea/libraries
 /FinancasK/.idea/modules.xml
 /FinancasK/.idea/workspace.xml
