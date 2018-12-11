@@ -6,40 +6,43 @@ class Resumo(private val transacoes : List<Transacao>) {
 
     fun receita() : BigDecimal {
 
-//        var totalReceitas = BigDecimal.ZERO
-//        for (transacao in transacoes) {
-//            if (transacao.tipo == Tipo.RECEITA)
-//                totalReceitas = totalReceitas.plus(transacao.valor)
-//        }
-//
-//        return totalReceitas
-        val somaDeReceita: Double = somaPorTipo(Tipo.RECEITA)
-
-        return BigDecimal(somaDeReceita)
+        return somaPorTipo(Tipo.RECEITA)
     }
 
     fun despesa() : BigDecimal {
 
-        val somaDeDespesas: Double = somaPorTipo(Tipo.DESPESA)
-
-        return BigDecimal(somaDeDespesas)
+        return somaPorTipo(Tipo.DESPESA)
     }
 
-    fun total() : BigDecimal {
 
-        return receita().subtract(despesa())
-    }
+//    fun total() : BigDecimal {
+//
+//        return receita().subtract(despesa())
+//    }
 
-    private fun somaPorTipo(tipo : Tipo) : Double {
+    /*
+        Single Expression Function
+        No caso de a função ter apenas uma instrução, podemos utilizar esse recurso de Single Expression
+        Function do Kotlin. Nesse caso, não precisamos explicitar o tipo do retorno da função, podemos
+        omitir a keyword return e fazer com que o retorno seja "atribuído" ao nome da função.
+    */
+    fun total() = receita().subtract(despesa())
+
+    private fun somaPorTipo(tipo : Tipo) : BigDecimal {
 
         /*
-            Utilização de Lambda Function na manipulação de array.
-            Note que, quando a função lambda (função anônima) fornecida como parâmetro possui apenas
-            uma função, não precisamos colocar os parênteses, podemos passar diretamente a função.
+            Outro recurso da lambda function é que ele já possui um objeto subentendido dentro dela, do
+            item que estamos manipulando.
+            Podemos acessá-lo através do objeto 'it'.
+            Então, ao invés de fazermos a chamada:
+                - .filter { transacao -> transacao.tipo == tipo }
+            podemos fazer da seguinte maneira:
+                .filter { it.tipo == tipo }
         */
 
-        return transacoes
-                .filter { transacao -> transacao.tipo == tipo }
-                .sumByDouble { transacao -> transacao.valor.toDouble() }
+        val someDeTransacoesPorTipo = transacoes
+                .filter { it.tipo == tipo }
+                .sumByDouble { it.valor.toDouble() }
+        return BigDecimal(someDeTransacoesPorTipo)
     }
 }
