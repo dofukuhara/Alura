@@ -2,6 +2,8 @@ package br.com.dofukuhara.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.Toast
 import br.com.dofukuhara.financask.R
 import br.com.dofukuhara.financask.model.Tipo
 import br.com.dofukuhara.financask.model.Transacao
@@ -16,19 +18,35 @@ class ListaTransacoesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
 
-        //val transacoes = listOf("Macarrão - R$ 2,40", "Economia - R$ 100,00", "Civic - R$ 10000,00")
-
-        // val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, transacoes)
-
-        /*
-            Não é necessário, mas para facilitar o entendimento do que o método 'transacoesDeExemplo()'
-            retorna, podemos explicitá-lo com a utilização da indicação " : List<Transacao> "
-         */
         val transacoes : List<Transacao> = transacoesDeExemplo()
 
         configuraLista(transacoes)
 
         configuraResumo(transacoes)
+
+
+        /*
+            OBJECT EXPRESSIONS
+
+            Similar ao Java, para implementarmos o evento de clique, temos que implementar seu listener.
+            Em Kotlin não temos a 'keywork' new para instânciar um objeto. Nesse caso, utilizamos a
+            keywork object com o intuito de informar que vamos passar um objeto e explicitamos o seu
+            tipo com o caracter :
+            
+            Note que, similar como em Java, quando implementamos funções anônimas, a referência ao 'this'
+            é do escopo da função implementada (View) e não da Activity a qual estamos definindo.
+            Para isso, caso queria referenciar o this para essa Activity (ou para qualquer outra classe),
+            podemos utilizar uma 'label' para fazer essa refência
+        */
+        lista_transacoes_adiciona_receita.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                Toast.makeText(
+                        this@ListaTransacoesActivity,
+                        "Clique em nova receita",
+                        Toast.LENGTH_SHORT).show()
+            }
+
+        })
 
     }
 
@@ -36,12 +54,6 @@ class ListaTransacoesActivity : AppCompatActivity() {
         val view = window.decorView
         val resumoView = ResumoView(this, view, transacoes)
 
-//        resumoView.adicionaReceita()
-//        resumoView.adicionaDespesa()
-//        resumoView.adicionaTotal()
-
-        // Removendo a responsabilidade da Activity. Delegando a responsabilidade de como o resumo
-        // deve ser exibido/calculado para o próprio ResumoView.
         resumoView.atualiza()
     }
 
