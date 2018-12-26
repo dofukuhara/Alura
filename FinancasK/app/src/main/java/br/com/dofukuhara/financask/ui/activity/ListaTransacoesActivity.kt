@@ -1,16 +1,21 @@
 package br.com.dofukuhara.financask.ui.activity
 
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import br.com.dofukuhara.financask.R
+import br.com.dofukuhara.financask.extension.formatToBrazilian
 import br.com.dofukuhara.financask.model.Tipo
 import br.com.dofukuhara.financask.model.Transacao
 import br.com.dofukuhara.financask.ui.adapter.ListaTransacoesAdapter
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
+import kotlinx.android.synthetic.main.form_transacao.view.*
 import java.math.BigDecimal
-import java.util.*
+import java.util.Calendar
 
 class ListaTransacoesActivity : AppCompatActivity() {
 
@@ -26,31 +31,60 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
 
         /*
-            OBJECT EXPRESSIONS
-
-            Similar ao Java, para implementarmos o evento de clique, temos que implementar seu listener.
-            Em Kotlin não temos a 'keywork' new para instânciar um objeto. Nesse caso, utilizamos a
-            keywork object com o intuito de informar que vamos passar um objeto e explicitamos o seu
-            tipo com o caracter :
-
-            Note que, similar como em Java, quando implementamos funções anônimas, a referência ao 'this'
-            é do escopo da função implementada (View) e não da Activity a qual estamos definindo.
-            Para isso, caso queria referenciar o this para essa Activity (ou para qualquer outra classe),
-            podemos utilizar uma 'label' para fazer essa refência (this@ListaTransacoesActivity)
-        */
-        /*
-            Como sugerido pelo Studio, além de implementar a interface utilizando Object Expression,
-            podemos também implementá-lo utilizando lambda expression.
-
-            IMPORTANTE: Note que a implementação ficou 'menos verbosa' e que, ao utilizar lambda expression,
-            o escopo da função é elevada ao nível de quem a chama, então nesse caso o this passa a se
-            referenciar à nossa Activity, podendo assim remover o label "@ListaTransacoesActivity" de this.
+            No Kotlin, para realizarmos cast explícito, devemos utilizar a keyword 'as', como no caso
+            abaixo, onde passamos uma VIEW para o inflate(), mas essa função pede como arguemento uma
+            VIEWGROUP, porém a VIEW que estamos passamos, sabemos que de fato ela é também uma VIEWGROUP:
+                val view = window.decorView
+                .infalte(<LayoutID>, view as ViewGroup, <attachToRoot>)
          */
-        lista_transacoes_adiciona_receita.setOnClickListener {
-            Toast.makeText(
-                    this,
-                    "Clique em nova receita",
-                    Toast.LENGTH_SHORT).show()
+        lista_transacoes_adiciona_receita
+                .setOnClickListener {
+                    val view = window.decorView
+                    val viewCriada = LayoutInflater
+                            .from(this)
+                            .inflate(
+                                    R.layout.form_transacao,
+                                    view as ViewGroup,
+                                    false)
+
+                    viewCriada.form_transacao_data
+                            .setText(Calendar.getInstance().formatToBrazilian())
+                    viewCriada.form_transacao_data
+                            .setOnClickListener {
+
+                                val ano = 2018
+                                val mes = 11
+                                val dia = 26
+
+                                DatePickerDialog(
+                                        this,
+                                        DatePickerDialog.OnDateSetListener { view, ano, mes, dia ->
+                                            val dataSelecionada = Calendar.getInstance()
+                                            dataSelecionada.set(ano, mes, dia)
+
+                                            viewCriada.form_transacao_data
+                                                    .setText(dataSelecionada.formatToBrazilian())
+                                        },
+                                        ano,
+                                        mes,
+                                        dia)
+                                        .show()
+                            }
+
+                    val adapter = ArrayAdapter.createFromResource(
+                            this,
+                            R.array.categorias_de_receita,
+                            android.R.layout.simple_dropdown_item_1line
+                    )
+
+                    viewCriada.form_transacao_categoria.adapter = adapter
+
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.adiciona_receita)
+                            .setView(viewCriada)
+                            .setPositiveButton("Adicionar", null)
+                            .setNegativeButton("Cancelar", null)
+                            .show()
         }
 
     }
