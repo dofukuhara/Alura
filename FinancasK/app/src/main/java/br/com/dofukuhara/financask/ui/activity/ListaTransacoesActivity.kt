@@ -16,10 +16,17 @@ import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 class ListaTransacoesActivity : AppCompatActivity() {
 
     private val transacoes: MutableList<Transacao> = mutableListOf()
+    /*
+        Ao utilizar o operador ?, estamos informando ao Kotlin que a variável (no caso, do tipo
+        View) pode aceitar também valor NULL (mark a type as nullable)
+    */
+    private var viewDaActivity: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
+
+        viewDaActivity = window.decorView
 
         configuraLista()
         configuraResumo()
@@ -28,8 +35,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
     }
 
     private fun configuraResumo() {
-        val view = window.decorView
-        val resumoView = ResumoView(this, view, transacoes)
+        val resumoView = ResumoView(this, viewDaActivity, transacoes)
 
         resumoView.atualiza()
     }
@@ -59,7 +65,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
     private fun chamaDialogDeAdicao(tipo: Tipo) {
         AdicionaTransacaoDialog(
-                window.decorView as ViewGroup,
+                viewDaActivity as ViewGroup,
                 this)
                 .show(tipo,
                         object : TransacaoDelegate {
@@ -72,7 +78,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
 
     private fun chamaDialogDeAlteracao(transacao: Transacao, posicao: Int) {
-        AlteraTransacaoDialog(window.decorView as ViewGroup, this)
+        AlteraTransacaoDialog(viewDaActivity as ViewGroup, this)
                 .show(transacao, object : TransacaoDelegate {
                     override fun delegate(transacao: Transacao) {
                         altera(transacao, posicao)

@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.resumo_card.view.*
 import java.math.BigDecimal
 
 class ResumoView (context : Context,
-                  private val view : View,
+                  private val view : View?,
                   transacoes: List<Transacao>) {
 
     private val resumo = Resumo(transacoes)
@@ -32,18 +32,19 @@ class ResumoView (context : Context,
         val totalReceitas = resumo.receita
 
         /*
-            view.resumo_card_receita
-                .setTextColor(corReceita)
-            view.resumo_card_receita.text = totalReceitas.formatToBrazilizan()
+            Na assinatura do construtor dessa classe, foi ajustado para que o tipo de view seja
+            "View?", ou seja, a variável passada como parâmetro pode ser nula.
+            Então, em todas as chamadas a essa variável, o Kotlin irá indicar como possível ponto de
+            falha e não permitirá que o código compile.
+            Para isso, podemos utilizar o operador !! => non-null asserted(!!)
+            Ao utilizarmos esse operador, informamos ao Kotlin que nós iremos nos responsibilizar de
+            que ela "nunca" seja nula e que permita assim a compilação do código.
 
-         */
-        /*
-            O código executa várias chamadas ao objeto 'view.resumo_card_receita' a fim de alterar
-            suas properties.
-            No Kotlin, existe o recurso 'with', que permite com que o objeto seja chamado uma única
-            vez e todas as modificações de suas properties seja feita em bloco.
-         */
-        with (view.resumo_card_receita) {
+            Obs: Ao utilizar essa estratégia, caso a variável (com o !!), ao ser invocada tenha valor
+            nulo, ao invés de lançar um 'tradicional' NullPointerException, será lançado um erro
+            KotlinNullPointerException
+        */
+        with (view!!.resumo_card_receita) {
             setTextColor(corReceita)
             text = totalReceitas.formatToBrazilizan()
         }
@@ -53,7 +54,7 @@ class ResumoView (context : Context,
     private fun adicionaDespesa() {
 
         val totalDespesas = resumo.despesa
-        with(view.resumo_card_despesa) {
+        with(view!!.resumo_card_despesa) {
             setTextColor(corDespesa)
             text = totalDespesas.formatToBrazilizan()
         }
@@ -64,7 +65,7 @@ class ResumoView (context : Context,
         val resumoTotal = resumo.total
         val cor = corPor(resumoTotal)
 
-        with(view.resumo_card_total) {
+        with(view!!.resumo_card_total) {
             setTextColor(cor)
             text = resumoTotal.formatToBrazilizan()
         }
