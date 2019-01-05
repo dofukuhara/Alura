@@ -18,36 +18,32 @@ class ListaTransacoesActivity : AppCompatActivity() {
     private val transacoes: MutableList<Transacao> = mutableListOf()
 
     /*
-        Modificador LATEINIT
-        A fim de melhoarar o código, podemos substituir a abordagem anterior, de inicializar a variável
-        com NULL e fazer a verificação em todos os pontos onde a mesma é utilizada pelo modificador
-        lateinit.
-        Com ele, informamos ao Kotlin que iremos declarar a variável nesse ponto, mas iremos inicializá-la
-        posteriormente, em outra parte do código.
-        Note que:
-            = Somos obrigados a manter a variável como VAR, pois o lateinit necessita de uma variável
-              mutável para alterar seu valor posteriormente
-            = Não podemos mais utilizar o operador de indicação de variável nullable ?
-        Outro benefício é que diferente da abordagem anterior, o lateinit é 'fail fast', ou seja, a
-        aplicação irá crashar logo na primeira utilização dessa variável, e não apenas quando for tentar
-        acessar o seu conteúdo ou de suas properties.
+        Outra abordagem para o caso da inicialização da variável é a DELEGATE com LAZY INIT.
+        A estratégia delegate é utilizada pela KeyWord 'by' e o Lazy Init pela função 'lazy {...}'
 
-        Um contra-ponto é que dependendo do número de variáveis lateinit e do tamanho do código, possa
-        ficar complicado de gerenciar se as variáveis estão sendo inicializadas nos momentos corretos.
+        Algumas considerações importantes:
+            - O Lazy Init não pode ser utilizado juntamente com o modificador 'lateinit'
+            - A variável deve ser declarada com o modificador 'val'
+            - A inicialização da variável será realizada na primeira tentativa de acesso a ela
+
+        Obs:
+            - Caso o bloco de escolo de lazy esteja vazio, o lazy irá retornar um objeto do tipo
+              UNIT para a variável
+            - Como o lazy consegui inferir o tipo do objeto a ser atribuido à variável, não é
+              necessário explicitar o tipo da variável (nesse caso, ": View")
 
     */
-    private lateinit var viewDaActivity: View
+    private val viewDaActivity by lazy {
+        window.decorView
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
 
-        viewDaActivity = window.decorView
-
         configuraLista()
         configuraResumo()
         configuraFab()
-
     }
 
     private fun configuraResumo() {
