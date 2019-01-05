@@ -2,7 +2,6 @@ package br.com.dofukuhara.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.view.ViewGroup
 import br.com.dofukuhara.financask.R
 import br.com.dofukuhara.financask.delegate.TransacaoDelegate
@@ -17,24 +16,23 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
     private val transacoes: MutableList<Transacao> = mutableListOf()
 
-    /*
-        Outra abordagem para o caso da inicialização da variável é a DELEGATE com LAZY INIT.
-        A estratégia delegate é utilizada pela KeyWord 'by' e o Lazy Init pela função 'lazy {...}'
-
-        Algumas considerações importantes:
-            - O Lazy Init não pode ser utilizado juntamente com o modificador 'lateinit'
-            - A variável deve ser declarada com o modificador 'val'
-            - A inicialização da variável será realizada na primeira tentativa de acesso a ela
-
-        Obs:
-            - Caso o bloco de escolo de lazy esteja vazio, o lazy irá retornar um objeto do tipo
-              UNIT para a variável
-            - Como o lazy consegui inferir o tipo do objeto a ser atribuido à variável, não é
-              necessário explicitar o tipo da variável (nesse caso, ": View")
-
-    */
     private val viewDaActivity by lazy {
         window.decorView
+    }
+
+    /*
+        A estratégia de Lazy Init deve ser utilizada com cautela, pois no caso abaixo, se fôssemos
+        iniciar uma outra property da classe diretamente, com a variável que está sendo inicializada via lay:
+            private val viewGroupDaActivity = viewDaActivity as ViewGroup
+        isso iria fazer com que inicialização postergada de "viewDaActivity" ocorresse nesse momento,
+        e no caso, a property "window" ainda seria nula, o que, consequentemente, iria atribuir nulo
+        tanto à "viewDaActivity" quanto "viewGroupDaActivity"
+
+        Mais estratégias de delegação de properties pode ser vista na documentação oficial do Kotlin em
+        https://kotlinlang.org/docs/reference/delegated-properties.html
+    */
+    private val viewGroupDaActivity by lazy {
+        viewDaActivity as ViewGroup
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,9 +74,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
     }
 
     private fun chamaDialogDeAdicao(tipo: Tipo) {
-        AdicionaTransacaoDialog(
-                viewDaActivity as ViewGroup,
-                this)
+        AdicionaTransacaoDialog(viewGroupDaActivity, this)
                 .show(tipo,
                         object : TransacaoDelegate {
                             override fun delegate(transacao: Transacao) {
@@ -90,12 +86,13 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
 
     private fun chamaDialogDeAlteracao(transacao: Transacao, posicao: Int) {
-        AlteraTransacaoDialog(viewDaActivity as ViewGroup, this)
-                .show(transacao, object : TransacaoDelegate {
-                    override fun delegate(transacao: Transacao) {
-                        altera(transacao, posicao)
-                    }
-                })
+        AlteraTransacaoDialog(viewGroupDaActivity, this)
+                .show(transacao,
+                        object : TransacaoDelegate {
+                            override fun delegate(transacao: Transacao) {
+                                altera(transacao, posicao)
+                            }
+                        })
     }
 
     private fun adiciona(transacao: Transacao) {
