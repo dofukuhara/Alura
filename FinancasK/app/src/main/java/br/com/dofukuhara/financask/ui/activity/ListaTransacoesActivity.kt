@@ -16,11 +16,27 @@ import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 class ListaTransacoesActivity : AppCompatActivity() {
 
     private val transacoes: MutableList<Transacao> = mutableListOf()
+
     /*
-        Ao utilizar o operador ?, estamos informando ao Kotlin que a variável (no caso, do tipo
-        View) pode aceitar também valor NULL (mark a type as nullable)
+        Modificador LATEINIT
+        A fim de melhoarar o código, podemos substituir a abordagem anterior, de inicializar a variável
+        com NULL e fazer a verificação em todos os pontos onde a mesma é utilizada pelo modificador
+        lateinit.
+        Com ele, informamos ao Kotlin que iremos declarar a variável nesse ponto, mas iremos inicializá-la
+        posteriormente, em outra parte do código.
+        Note que:
+            = Somos obrigados a manter a variável como VAR, pois o lateinit necessita de uma variável
+              mutável para alterar seu valor posteriormente
+            = Não podemos mais utilizar o operador de indicação de variável nullable ?
+        Outro benefício é que diferente da abordagem anterior, o lateinit é 'fail fast', ou seja, a
+        aplicação irá crashar logo na primeira utilização dessa variável, e não apenas quando for tentar
+        acessar o seu conteúdo ou de suas properties.
+
+        Um contra-ponto é que dependendo do número de variáveis lateinit e do tamanho do código, possa
+        ficar complicado de gerenciar se as variáveis estão sendo inicializadas nos momentos corretos.
+
     */
-    private var viewDaActivity: View? = null
+    private lateinit var viewDaActivity: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
