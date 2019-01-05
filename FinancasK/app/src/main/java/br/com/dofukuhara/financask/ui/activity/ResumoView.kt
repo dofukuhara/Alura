@@ -11,7 +11,7 @@ import br.com.dofukuhara.financask.model.Transacao
 import kotlinx.android.synthetic.main.resumo_card.view.*
 import java.math.BigDecimal
 
-class ResumoView (private val context : Context,
+class ResumoView (context : Context,
                   private val view : View,
                   transacoes: List<Transacao>) {
 

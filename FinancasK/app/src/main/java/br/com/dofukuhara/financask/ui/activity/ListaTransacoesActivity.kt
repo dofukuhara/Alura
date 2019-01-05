@@ -2,6 +2,7 @@ package br.com.dofukuhara.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.view.ViewGroup
 import br.com.dofukuhara.financask.R
 import br.com.dofukuhara.financask.delegate.TransacaoDelegate
@@ -26,6 +27,13 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
     }
 
+    private fun configuraResumo() {
+        val view = window.decorView
+        val resumoView = ResumoView(this, view, transacoes)
+
+        resumoView.atualiza()
+    }
+
     private fun configuraFab() {
         lista_transacoes_adiciona_receita
                 .setOnClickListener {
@@ -38,6 +46,17 @@ class ListaTransacoesActivity : AppCompatActivity() {
                 }
     }
 
+    private fun configuraLista() {
+        val listaTransacoesAdapter = ListaTransacoesAdapter(transacoes, this)
+        with(lista_transacoes_listview) {
+            adapter = listaTransacoesAdapter
+            setOnItemClickListener { _, _, posicao, _ ->
+                val transacao = transacoes[posicao]
+                chamaDialogDeAlteracao(transacao, posicao)
+            }
+        }
+    }
+
     private fun chamaDialogDeAdicao(tipo: Tipo) {
         AdicionaTransacaoDialog(
                 window.decorView as ViewGroup,
@@ -45,46 +64,35 @@ class ListaTransacoesActivity : AppCompatActivity() {
                 .show(tipo,
                         object : TransacaoDelegate {
                             override fun delegate(transacao: Transacao) {
-                                transacoes.add(transacao)
-                                atualizaTransacoes()
+                                adiciona(transacao)
                                 lista_transacoes_adiciona_menu.close(true)
                             }
-
                         })
+    }
+
+
+    private fun chamaDialogDeAlteracao(transacao: Transacao, posicao: Int) {
+        AlteraTransacaoDialog(window.decorView as ViewGroup, this)
+                .show(transacao, object : TransacaoDelegate {
+                    override fun delegate(transacao: Transacao) {
+                        altera(transacao, posicao)
+                    }
+                })
+    }
+
+    private fun adiciona(transacao: Transacao) {
+        transacoes.add(transacao)
+        atualizaTransacoes()
+    }
+
+    private fun altera(transacao: Transacao, posicao: Int) {
+        transacoes[posicao] = transacao
+        atualizaTransacoes()
     }
 
     private fun atualizaTransacoes() {
         configuraLista()
         configuraResumo()
-    }
-
-    private fun configuraLista() {
-        lista_transacoes_listview.adapter = ListaTransacoesAdapter(transacoes, this)
-        lista_transacoes_listview.setOnItemClickListener { parent, view, position, id ->
-            val transacao = transacoes[position]
-            AlteraTransacaoDialog(window.decorView as ViewGroup, this)
-                    .show(transacao, object : TransacaoDelegate {
-                        override fun delegate(transacao: Transacao) {
-                            /*
-                                transacoes.set(position, transacao)
-
-                                No Kotlin, podemos utilizar o recurso:
-                                    Replace 'set' call with indexing operator
-                                na Collection de lista, a fim de substituir o elemento como se
-                                fosse uma atribuição
-                             */
-                            transacoes[position] = transacao
-                            atualizaTransacoes()
-                        }
-                    })
-        }
-    }
-
-    private fun configuraResumo() {
-        val view = window.decorView
-        val resumoView = ResumoView(this, view, transacoes)
-
-        resumoView.atualiza()
     }
 
 }
