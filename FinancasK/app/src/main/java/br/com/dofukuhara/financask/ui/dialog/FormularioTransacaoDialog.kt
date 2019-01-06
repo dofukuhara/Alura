@@ -19,23 +19,32 @@ import java.math.BigDecimal
 import java.util.*
 
 /*
-    Superclass 'FormularioTransacaoDialog', gerada a partir de "AdicionaTransacaoDialog" através
-    do feature "Refactor This" (Ctrl + Alt + Shift + T) --> "Superclass..." da IDE
+    Note que, como tornamos o método "tituloPor()" abstrato, temos que tornar essa classe abstrata
+    também (pois como ele não possui a implementação de todos os métodos, essa classe não pode mais
+    ser instanciável, somente suas classes filhas [desde que não sejam abstratas também])
 
-    Note que, antes da KeyWord 'class', foi também adicionada a KeyWord 'open'
-    Por padrão, no Kotlin todas as classes são 'final' (ou seja, são imutáveis, não-herdáveis),
-    então para permitir que essa classe seja herdável por outras classes, é necessário utilizar esse
-    modificador 'open'
+    Dessa forma, como toda classe abstrata tem que ser extendida, o modificar 'open' não é mais
+    necessário. Essa keyword pode ser utilizada junto com abstract, mas seu uso se torna 'redundante',
+    pois debaixo dos panos, ela se torna 'aberta' para outras classes fazerem a herança desta.
 
  */
-open class FormularioTransacaoDialog(
+abstract class FormularioTransacaoDialog(
         private val context: Context,
         private val viewGroup: ViewGroup) {
 
     private val viewCriada = criaLayout()
-    private val campoCategoria = viewCriada.form_transacao_categoria
-    private val campoData = viewCriada.form_transacao_data
-    private val campoValor = viewCriada.form_transacao_valor
+    protected val campoCategoria = viewCriada.form_transacao_categoria
+    protected val campoData = viewCriada.form_transacao_data
+    protected val campoValor = viewCriada.form_transacao_valor
+
+    /*
+        Ao declarar properties abstratas da classe, note que:
+            - Seu modificador de acesso deve ser protected ou public (da mesma forma que nos métodos)
+            - O tipo da variável deve ser explícito (o Kotlin precisa dessa informação, pois senão
+              as subclasses poderiam guardar qualquer tipo de conteúdo)
+            - A property não pode ser inicializada (a inicialização fica a cargo das classes filhas)
+     */
+    protected abstract val tituloBotaoPositivo: String
 
     fun show(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
 
@@ -96,7 +105,7 @@ open class FormularioTransacaoDialog(
         AlertDialog.Builder(context)
                 .setTitle(titulo)
                 .setView(viewCriada)
-                .setPositiveButton("Adicionar"
+                .setPositiveButton(tituloBotaoPositivo
                 ) { _, _ ->
                     val valorEmTexto = campoValor.text.toString()
                     val dataEmTexto = campoData.text.toString()
@@ -118,14 +127,9 @@ open class FormularioTransacaoDialog(
                 .show()
     }
 
-    private fun tituloPor(tipo: Tipo): Int {
-        if (tipo == Tipo.RECEITA) {
-            return R.string.adiciona_receita
-        }
-        return R.string.adiciona_despesa
-    }
+    protected abstract fun tituloPor(tipo: Tipo): Int
 
-    private fun categoriasPor(tipo: Tipo): Int {
+    protected fun categoriasPor(tipo: Tipo): Int {
         if (tipo == Tipo.RECEITA) {
             return R.array.categorias_de_receita
         }
