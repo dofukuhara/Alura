@@ -3,7 +3,6 @@ package br.com.dofukuhara.financask.ui.dialog
 import android.content.Context
 import android.view.ViewGroup
 import br.com.dofukuhara.financask.R
-import br.com.dofukuhara.financask.delegate.TransacaoDelegate
 import br.com.dofukuhara.financask.extension.formatToBrazilian
 import br.com.dofukuhara.financask.model.Tipo
 import br.com.dofukuhara.financask.model.Transacao
@@ -22,10 +21,14 @@ class AlteraTransacaoDialog(
         return R.string.altera_despesa
     }
 
-    fun show(transacao: Transacao, transacaoDelegate: TransacaoDelegate) {
+    /*
+        Como não temos mais a Interface TransacaoDelegate, todos os pontos onde a High Order
+        Function é passada como parâmetro, devemos ajustar a assinatura do método
+     */
+    fun show(transacao: Transacao, delegate: (transacao: Transacao) -> Unit) {
         val tipo = transacao.tipo
-        
-        super.show(tipo, transacaoDelegate)
+
+        super.show(tipo, delegate)
 
         inicializaCampos(transacao)
     }

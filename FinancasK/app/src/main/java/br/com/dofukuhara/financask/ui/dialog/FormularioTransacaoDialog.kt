@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import br.com.dofukuhara.financask.R
-import br.com.dofukuhara.financask.delegate.TransacaoDelegate
 import br.com.dofukuhara.financask.extension.converteParaCalendar
 import br.com.dofukuhara.financask.extension.formatToBrazilian
 import br.com.dofukuhara.financask.model.Tipo
@@ -18,16 +17,6 @@ import kotlinx.android.synthetic.main.form_transacao.view.*
 import java.math.BigDecimal
 import java.util.*
 
-/*
-    Note que, como tornamos o método "tituloPor()" abstrato, temos que tornar essa classe abstrata
-    também (pois como ele não possui a implementação de todos os métodos, essa classe não pode mais
-    ser instanciável, somente suas classes filhas [desde que não sejam abstratas também])
-
-    Dessa forma, como toda classe abstrata tem que ser extendida, o modificar 'open' não é mais
-    necessário. Essa keyword pode ser utilizada junto com abstract, mas seu uso se torna 'redundante',
-    pois debaixo dos panos, ela se torna 'aberta' para outras classes fazerem a herança desta.
-
- */
 abstract class FormularioTransacaoDialog(
         private val context: Context,
         private val viewGroup: ViewGroup) {
@@ -37,20 +26,32 @@ abstract class FormularioTransacaoDialog(
     protected val campoData = viewCriada.form_transacao_data
     protected val campoValor = viewCriada.form_transacao_valor
 
-    /*
-        Ao declarar properties abstratas da classe, note que:
-            - Seu modificador de acesso deve ser protected ou public (da mesma forma que nos métodos)
-            - O tipo da variável deve ser explícito (o Kotlin precisa dessa informação, pois senão
-              as subclasses poderiam guardar qualquer tipo de conteúdo)
-            - A property não pode ser inicializada (a inicialização fica a cargo das classes filhas)
-     */
     protected abstract val tituloBotaoPositivo: String
 
-    fun show(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+    /*
+        Como uma alternativa à solução anterior (implementação de Object Expression via Interface),
+        pode-se utilizar uma estratégia de implementar a Interface em um arquivo JAVA e desenvolvê-la
+        utilizando Lambda Expression ao invés de Obejct Expression. Isso é possivel pois, por questões
+        de retrocompatibilidade, o Kotlin fornece o SAM (Single Abstract Method) Conversion proveniente
+        do Java 8. Então, somente Interfaces em arquivo JAVA com um único método podem utilizar esse
+        recurso e serem desenvolvidas utilizando Lambda Expression.
+
+        Mas, o Kotlin fornece um outro recurso, chamado de "HIGH ORDER FUNCTION".
+        Dessa forma, informamos que o "parâmetro" será uma função com as seguintes propriedades:
+            - exemplo: fun show (delegate: (transacao: Transacao) -> Unit)
+            -> 'delegate' : Nome da variável que irá representar a função
+            -> ': (transacao: Transacao)' : Dentro dos parêntesis indica quais os parâmetros devem
+               ser passados para a função. Caso não possua nenhum parâmetro, deve-se declarar os
+               parêntesis sem conteúdo
+            -> '-> Unit' : Após a arrow, deve ser informado o tipo de retorno da função. Como nesse
+               nosso exemplo não realizamos nenhum retorno, estamos retornando UNIT.
+     */
+    fun show(tipo: Tipo, delegate: (transacao: Transacao) -> Unit) {
+    //fun show(tipo: Tipo, delegate: TransacaoDelegate) {
 
         configuraCampoData()
         configuraCampoCategoria(tipo)
-        configuraFormulario(tipo, transacaoDelegate)
+        configuraFormulario(tipo, delegate)
     }
 
     private fun criaLayout(): View {
@@ -98,7 +99,11 @@ abstract class FormularioTransacaoDialog(
         campoCategoria.adapter = adapter
     }
 
-    private fun configuraFormulario(tipo: Tipo, transacaoDelegate: TransacaoDelegate) {
+    /*
+        Como não temos mais a Interface TransacaoDelegate, todos os pontos onde a High Order
+        Function é passada como parâmetro, devemos ajustar a assinatura do método
+     */
+    private fun configuraFormulario(tipo: Tipo, delegate: (transacao: Transacao) -> Unit) {
 
         val titulo = tituloPor(tipo)
 
@@ -120,7 +125,7 @@ abstract class FormularioTransacaoDialog(
                             data = data,
                             categoria = categoriaEmTexto)
 
-                    transacaoDelegate.delegate(transacaoCriada)
+                    delegate(transacaoCriada)
 
                 }
                 .setNegativeButton("Cancelar", null)
