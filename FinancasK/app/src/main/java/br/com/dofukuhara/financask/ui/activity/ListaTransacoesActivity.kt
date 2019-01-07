@@ -2,7 +2,10 @@ package br.com.dofukuhara.financask.ui.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
+import android.widget.AdapterView
 import br.com.dofukuhara.financask.R
 import br.com.dofukuhara.financask.model.Tipo
 import br.com.dofukuhara.financask.model.Transacao
@@ -58,24 +61,42 @@ class ListaTransacoesActivity : AppCompatActivity() {
                 val transacao = transacoes[posicao]
                 chamaDialogDeAlteracao(transacao, posicao)
             }
+
+            // setOnCreateContextMenuListener é responsável por exibir o Menu de Contexto ao realizar
+            // um LongPress no item da lista
+            // Como não utilizamos as variáveis view e menuInfo, podemos substituí-las por _
+            setOnCreateContextMenuListener { menu, _, _ ->
+                // grupo do menu, id, ordem, título
+                menu.add(Menu.NONE, 1, Menu.NONE, "Remover")
+            }
         }
     }
 
-    /*
-        Após o ajuste feito em FormularioTransacaoDialog para declarar a High Order Function, devemos
-        desenvolvê-la onde ela for invocada.
+    override fun onContextItemSelected(item: MenuItem?): Boolean {
+        // Note que estamos realizando uma Safe Call (?) pois o parâmetro item pode receber valor
+        // nulo (MenuItem?)
+        val idDoMenu = item?.itemId
+        if (idDoMenu == 1) {
+            /*
+                Por padrão, o tipo da property 'item.menuInfo' é "ContextMenuInfo", que é uma classe
+                mais genérica e não nos dá muita informação sobre os itens da lista
+                Para isso, podemos fazer um Cast para um tipo mais específico, o "AdapterView.AdapterContextMenuInfo"
+                Com esse tipo de variável, somos capazes de acessar a posição do item a qual o menu
+                foi gerado.
+             */
+            val adapterMenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
+            val posicaoDaTransacao = adapterMenuInfo.position
+            remove(posicaoDaTransacao)
+        }
 
-        Note que:
-        - Quando uma High Order Function (ou Lambda Function) for o ultimo parâmetro do método,
-          podemos implementá-la fora dos parântesis
-        - Da mesma forma que em Lambda Expression, caso a função tenha apenas 1 parâmetro, podemos
-          nos referenciar à ela através do objeto subtendido "it"
-        - Entretanto, realizar a utilização do obj "it" (além da Lambda Function sem informar o nome
-          do método), reduz bastante a legibilidade do código.
-          Então, nesse caso, se explicitarmos o nome do parâmetro e damos um nome mais coerente com
-          o seu propósito (transacaoCriada no lugar de 'it' ou de apenas 'transaca') já melhora um
-          pouco a legibilidade/compreensão do seu propósito
-     */
+        return super.onContextItemSelected(item)
+    }
+
+    private fun remove(posicao: Int) {
+        transacoes.removeAt(posicao)
+        atualizaTransacoes()
+    }
+
     private fun chamaDialogDeAdicao(tipo: Tipo) {
         AdicionaTransacaoDialog(viewGroupDaActivity, this)
                 .show(tipo) {transacaoCriada ->
@@ -84,34 +105,6 @@ class ListaTransacoesActivity : AppCompatActivity() {
                 }
     }
 
-    /*
-        Com relação ao ponto de legibilidade mencionado no comentário anterior, note que nesse exemplo,
-        caso fizessemos a seguinte implementação
-            private fun chamaDialogDeAlteracao(transacao: Transacao, posicao: Int) {
-                AlteraTransacaoDialog(viewGroupDaActivity, this)
-                    .show(transacao) {
-                        altera(transacao, posicao)
-            }
-        o código compilaria, pois como a expressao lambda consegue acessar as variáveis definidas no
-        escopo acima do seu, ela interpretaria que ao invés de utilizar a variável passada via
-        parâmetro na função 'show()' de 'AlteraTransacaoDialog', ela iria utilizar a variável
-        'transacao' passada via parâmetro para "chamaDialogDeAlteracao", ou seja, sem ter seu valor
-        alterado... o que faria com que o programa não executasse da forma desejada.
-    }
-     */
-    /*
-        Uma outra possível solução, para melhorar um pouco mais a legibilidade seria a de utilizar
-        o NAMED PARAMETER.
-        Nesse caso, fica um pouco mais claro o contexto do High-Order Function.
-        Note que no caso abaixo, estamos dando o nome para esse parâmetro referente à funcao de
-        "transacaoDelegate". Outro ponto a se notar é que, como agora é passado uma variável como
-        parâmetro, a implementação deve ser feita dentro dos parêntesis da função.
-
-            AlteraTransacaoDialog(viewGroupDaActivity, this)
-                .show(transacao, transacaoDelegate = {transacaoAlterada ->
-                    altera(transacaoAlterada, posicao)
-                })
-     */
     private fun chamaDialogDeAlteracao(transacao: Transacao, posicao: Int) {
         AlteraTransacaoDialog(viewGroupDaActivity, this)
                 .show(transacao) {transacaoAlterada ->
