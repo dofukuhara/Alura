@@ -33,7 +33,7 @@ public class Leilao implements Serializable {
         if (valorLance > maiorLance) {
             maiorLance = valorLance;
         }
-        
+
         if (valorLance < menorLance) {
             menorLance = valorLance;
         }
