@@ -92,4 +92,59 @@ public class LeilaoTest {
         assertEquals(200,
                 tresMaioresLancesDevolvidos.get(2).getValor(), DELTA);
     }
+
+    @Test
+    public void deve_devolverTresMaioresLances_QuandoNaoRecebeLances() {
+        List<Lance> tresMaioresLancesDevolvidos = console.tresMaioresLances();
+
+        assertEquals(0, tresMaioresLancesDevolvidos.size());
+    }
+
+    @Test
+    public void deve_devolverTresMaioresLances_QuandoRecebeApenasUmLance() {
+        console.propoe(new Lance(alex, 200));
+
+        List<Lance> tresMaioresLancesDevolvidos = console.tresMaioresLances();
+
+        assertEquals(1, tresMaioresLancesDevolvidos.size());
+        assertEquals(200.0, tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
+    }
+
+    @Test
+    public void deve_devolverTresMaioresLances_QuandoRecebeApenasDoisLances() {
+        console.propoe(new Lance(alex, 300));
+        console.propoe(new Lance(new Usuario("Fran"), 400.0));
+
+        List<Lance> tresMaioresLancesDevolvidos = console.tresMaioresLances();
+
+        assertEquals(2, tresMaioresLancesDevolvidos.size());
+        assertEquals(400.0, tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
+        assertEquals(300.0, tresMaioresLancesDevolvidos.get(1).getValor(), DELTA);
+    }
+
+    @Test
+    public void deve_devolverTresMaioresLances_QuandoRecebeMaisDeTresLances() {
+        final Usuario fran = new Usuario("Fran");
+        console.propoe(new Lance(alex, 300.0));
+        console.propoe(new Lance(fran, 400.0));
+        console.propoe(new Lance(alex, 500.0));
+        console.propoe(new Lance(fran, 600.0));
+
+        final List<Lance> tresMaioresLancesDevolvidosParaQuatroLances = console.tresMaioresLances();
+
+        assertEquals(3, tresMaioresLancesDevolvidosParaQuatroLances.size());
+
+        assertEquals(600.0, tresMaioresLancesDevolvidosParaQuatroLances.get(0).getValor(), DELTA);
+        assertEquals(500.0, tresMaioresLancesDevolvidosParaQuatroLances.get(1).getValor(), DELTA);
+        assertEquals(400.0, tresMaioresLancesDevolvidosParaQuatroLances.get(2).getValor(), DELTA);
+
+        console.propoe(new Lance(alex, 700.0));
+        List<Lance> tresMaioresLancesDevolvidosParaCincoLances = console.tresMaioresLances();
+
+        assertEquals(3, tresMaioresLancesDevolvidosParaCincoLances.size());
+
+        assertEquals(700.0, tresMaioresLancesDevolvidosParaCincoLances.get(0).getValor(), DELTA);
+        assertEquals(600.0, tresMaioresLancesDevolvidosParaCincoLances.get(1).getValor(), DELTA);
+        assertEquals(500.0, tresMaioresLancesDevolvidosParaCincoLances.get(2).getValor(), DELTA);
+    }
 }
