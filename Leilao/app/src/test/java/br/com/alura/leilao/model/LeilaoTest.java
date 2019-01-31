@@ -38,16 +38,6 @@ public class LeilaoTest {
     }
 
     @Test
-    public void deve_DevolverMaiorLance_QuandoRecebeMaisDeUmLanceEmOrdemDecrescente() {
-        console.propoe(new Lance(alex,10000.0));
-        console.propoe(new Lance(new Usuario("Fran"), 9000.0));
-
-        double maiorLanceDevolvido = console.getMaiorLance();
-
-        assertEquals(10000.0, maiorLanceDevolvido, DELTA);
-    }
-
-    @Test
     public void deve_DevolverMenorLance_QuandoRecebeApenasUmLanc() {
         console.propoe(new Lance(alex, 200.0));
 
@@ -64,16 +54,6 @@ public class LeilaoTest {
         double menorLanceDevolvido = console.getMenorLance();
 
         assertEquals(100.0, menorLanceDevolvido, DELTA);
-    }
-
-    @Test
-    public void deve_DevolverMenorLance_QuandoRecebeMaisDeUmLanceEmOrdemDecrescente() {
-        console.propoe(new Lance(alex,10000.0));
-        console.propoe(new Lance(new Usuario("Fran"), 9000.0));
-
-        double menorLanceDevolvido = console.getMenorLance();
-
-        assertEquals(9000.0, menorLanceDevolvido, DELTA);
     }
 
     @Test
@@ -146,5 +126,29 @@ public class LeilaoTest {
         assertEquals(700.0, tresMaioresLancesDevolvidosParaCincoLances.get(0).getValor(), DELTA);
         assertEquals(600.0, tresMaioresLancesDevolvidosParaCincoLances.get(1).getValor(), DELTA);
         assertEquals(500.0, tresMaioresLancesDevolvidosParaCincoLances.get(2).getValor(), DELTA);
+    }
+
+    @Test
+    public void deve_devolverValorZeroParaMaiorLance_QuandoNaoTiverLances() {
+        double maiorLanceDevolvido = console.getMaiorLance();
+
+        assertEquals(0.0, maiorLanceDevolvido, DELTA);
+    }
+
+    @Test
+    public void deve_devolverValorZeroParaMenorLance_QuandoNaoTiverLances() {
+        double menorLanceDevolvido = console.getMenorLance();
+
+        assertEquals(0.0, menorLanceDevolvido, DELTA);
+    }
+
+    @Test
+    public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
+        console.propoe(new Lance(alex, 500.0));
+        console.propoe(new Lance(new Usuario("Fran"), 400.0));
+
+        int quantidadeLancesDevolvida = console.quantidadeLances();
+
+        assertEquals(1, quantidadeLancesDevolvida);
     }
 }
