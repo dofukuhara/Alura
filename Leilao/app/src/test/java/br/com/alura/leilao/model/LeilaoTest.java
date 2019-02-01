@@ -1,16 +1,31 @@
 package br.com.alura.leilao.model;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
+import br.com.alura.leilao.exception.LanceSeguidoDoMesmoUsuarioException;
+import br.com.alura.leilao.exception.UsuarioJaDeuCincoLancesException;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class LeilaoTest {
 
     private static final double DELTA = 0.0001;
     private final Leilao console = new Leilao("Console");
     private final Usuario alex = new Usuario("Alex");
+
+    /*
+    (2)
+        Uma das formas de verificar se a aplicação lançou uma exceção 'esperada', podemos utilizar o
+        ExpectedException. Para isso, devemos declará-lo como uma variável pública da classe e
+        inicializá-lo com "ExcepectedException.none()"
+     */
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void deve_DevolverDescricao_QuandoRecebeDescricao() {
@@ -142,18 +157,38 @@ public class LeilaoTest {
         assertEquals(0.0, menorLanceDevolvido, DELTA);
     }
 
+    /*
+    (1)
+        Uma das formas de se verificar por uma exception lancada, é a de encapsular o método que
+        irá lançar essa exceção em um bloco try/catch e colocar um "Assert.fail()" logo abaixo.
+        Opcionalmente, no 'catch', ainda podemos verificar se a mensagem da exception condiz com a
+        que esperamos.
+     */
     @Test
     public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
         console.propoe(new Lance(alex, 500.0));
-        console.propoe(new Lance(new Usuario("Fran"), 400.0));
-
-        int quantidadeLancesDevolvida = console.quantidadeLances();
-
-        assertEquals(1, quantidadeLancesDevolvida);
+        try {
+            console.propoe(new Lance(new Usuario("Fran"), 400.0));
+            fail("Excecao LanceMenorQueUltimoLanceException esperada");
+        } catch (Exception exception) {
+            // Caso tenha alguma mensagem customizada que esteja esperando, podemos fazer um:
+            // assertEquals("CUSTOM MESSAGE", exception.getMessage());
+        }
     }
 
+    /*
+    (2)
+        Outra forma é a de utilizar o ExpectedException.
+        Dessa forma, podemos informar ao teste qual o tipo de Exception que esperamos capturar,
+        bem como sua mensagem.
+     */
     @Test
     public void naoDeve_AdicionarLance_QuandoForOMesmoUsuarioDoUltimoLance() {
+        exception.expect(LanceSeguidoDoMesmoUsuarioException.class);
+
+        //Caso tenha alguma mensagem customizada que esteja esperando, podemos fazer um:
+        // exception.expectMessage("CUSTOM MESSAGE");
+
         console.propoe(new Lance(alex, 500.0));
         console.propoe(new Lance(new Usuario("Alex"), 600.0));
 
@@ -162,7 +197,15 @@ public class LeilaoTest {
         assertEquals(1, quantidadeLancesDevolvida);
     }
 
-    @Test
+    /*
+    (3)
+        Uma opção mais simples oferecida pela lib do JUnit é a de se utilizar o atributo "excepted"
+        junto à annotation "@Test", informando qual o tipo de objeto estamos esperando que o teste
+        tenha que capturar.
+        Dessa forma, não precisamos fazer uso de captura via bloco try/catch com verificação via
+        "Assert.fail()" ou a de instânciar um ExpcetecException e configurá-lo com a exceção esperada.
+     */
+    @Test(expected = UsuarioJaDeuCincoLancesException.class)
     public void naoDeve_AdicionarLance_QuandoUsuarioDerCincoLances() {
         final Usuario fran = new Usuario("Fran");
 
@@ -178,9 +221,5 @@ public class LeilaoTest {
         console.propoe(new Lance(fran, 1000.0));
         console.propoe(new Lance(alex, 1100.0));
         console.propoe(new Lance(fran, 1200.0));
-
-        int quantidadeLancesDevolvida = console.quantidadeLances();
-
-        assertEquals(10, quantidadeLancesDevolvida);
     }
 }
