@@ -1,5 +1,6 @@
 package br.com.alura.leilao.model;
 
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -9,6 +10,14 @@ import java.util.List;
 import br.com.alura.leilao.exception.LanceSeguidoDoMesmoUsuarioException;
 import br.com.alura.leilao.exception.UsuarioJaDeuCincoLancesException;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.CombinableMatcher.both;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -18,19 +27,20 @@ public class LeilaoTest {
     private final Leilao console = new Leilao("Console");
     private final Usuario alex = new Usuario("Alex");
 
-    /*
-    (2)
-        Uma das formas de verificar se a aplicação lançou uma exceção 'esperada', podemos utilizar o
-        ExpectedException. Para isso, devemos declará-lo como uma variável pública da classe e
-        inicializá-lo com "ExcepectedException.none()"
-     */
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void deve_DevolverDescricao_QuandoRecebeDescricao() {
         String descricaoDevolvida = console.getDescricao();
-        assertEquals("Console", descricaoDevolvida);
+//        assertEquals("Console", descricaoDevolvida);
+
+
+//        assertThat(descricaoDevolvida, equalTo("Console"));
+//        assertThat(descricaoDevolvida, is("Console"));
+        // Os casos acima funcionam, porém, podemos implementar o teste conforme abaixo, utilizando
+        // a combinação dos matchers 'is()' e 'equalTo()', a fim de melhorar a legibilidade do teste
+        assertThat(descricaoDevolvida, is(equalTo("Console")));
     }
 
     @Test
@@ -39,7 +49,12 @@ public class LeilaoTest {
 
         double maiorLanceDevolvido = console.getMaiorLance();
 
-        assertEquals(200.0, maiorLanceDevolvido, DELTA);
+//        assertEquals(200.0, maiorLanceDevolvido, DELTA);
+        /*
+            Para utilizar o 'closeTo()' é necessário importar a dependência completa do Hamcrest
+            a partir do pacote org.hamcrest:hamcrest-all:1.3
+         */
+        assertThat(200.0, closeTo(maiorLanceDevolvido, DELTA));
     }
 
     @Test
@@ -79,13 +94,42 @@ public class LeilaoTest {
 
         List<Lance> tresMaioresLancesDevolvidos = console.tresMaioresLances();
 
-        assertEquals(3, tresMaioresLancesDevolvidos.size());
-        assertEquals(400,
-                tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
-        assertEquals(300,
-                tresMaioresLancesDevolvidos.get(1).getValor(), DELTA);
-        assertEquals(200,
-                tresMaioresLancesDevolvidos.get(2).getValor(), DELTA);
+//        assertEquals(3, tresMaioresLancesDevolvidos.size());
+
+//        assertThat(tresMaioresLancesDevolvidos, hasSize(3));
+        // O caso acima já realiza o teste de forma experada, entretanto, conforme visto no primeiro
+        // teste, podemos utilizar o mather "equalTo()", a fim de melhorar a legibilidade do teste.
+        assertThat(tresMaioresLancesDevolvidos, hasSize(equalTo(3)));
+
+//        assertEquals(400,
+//                tresMaioresLancesDevolvidos.get(0).getValor(), DELTA);
+//        assertEquals(300,
+//                tresMaioresLancesDevolvidos.get(1).getValor(), DELTA);
+//        assertEquals(200,
+//                tresMaioresLancesDevolvidos.get(2).getValor(), DELTA);
+
+        // Verifica se um item em específico está contido na Lista
+        assertThat(tresMaioresLancesDevolvidos, hasItem(new Lance(alex, 400.0)));
+        // Verifica se todos os itens, na ordem especificada, está contida na Lista
+        assertThat(tresMaioresLancesDevolvidos, contains(
+                new Lance(alex, 400.0),
+                new Lance(new Usuario("Fran"), 300.0),
+                new Lance(alex, 200.0)
+        ));
+
+        /*
+            Uma outra forma de melhorar o caso de teste deste cenário, ondem temos 2 verificações
+            (tamanho da lista) e a ordem dos elementos da mesma, podemos utilizar o matcher "both()"
+            e "and()", assim podemos fazer a descrição dos testes em um único AssertThat().
+         */
+        assertThat(tresMaioresLancesDevolvidos,
+                both(Matchers.<Lance>hasSize(3))
+                        .and(contains(
+                                new Lance(alex, 400.0),
+                                new Lance(new Usuario("Fran"), 300.0),
+                                new Lance(alex, 200.0))
+                        )
+        );
     }
 
     @Test
@@ -157,13 +201,6 @@ public class LeilaoTest {
         assertEquals(0.0, menorLanceDevolvido, DELTA);
     }
 
-    /*
-    (1)
-        Uma das formas de se verificar por uma exception lancada, é a de encapsular o método que
-        irá lançar essa exceção em um bloco try/catch e colocar um "Assert.fail()" logo abaixo.
-        Opcionalmente, no 'catch', ainda podemos verificar se a mensagem da exception condiz com a
-        que esperamos.
-     */
     @Test
     public void naoDeve_AdicionarLance_QuandoForMenorQueOMaiorLance() {
         console.propoe(new Lance(alex, 500.0));
@@ -171,23 +208,12 @@ public class LeilaoTest {
             console.propoe(new Lance(new Usuario("Fran"), 400.0));
             fail("Excecao LanceMenorQueUltimoLanceException esperada");
         } catch (Exception exception) {
-            // Caso tenha alguma mensagem customizada que esteja esperando, podemos fazer um:
-            // assertEquals("CUSTOM MESSAGE", exception.getMessage());
         }
     }
 
-    /*
-    (2)
-        Outra forma é a de utilizar o ExpectedException.
-        Dessa forma, podemos informar ao teste qual o tipo de Exception que esperamos capturar,
-        bem como sua mensagem.
-     */
     @Test
     public void naoDeve_AdicionarLance_QuandoForOMesmoUsuarioDoUltimoLance() {
         exception.expect(LanceSeguidoDoMesmoUsuarioException.class);
-
-        //Caso tenha alguma mensagem customizada que esteja esperando, podemos fazer um:
-        // exception.expectMessage("CUSTOM MESSAGE");
 
         console.propoe(new Lance(alex, 500.0));
         console.propoe(new Lance(new Usuario("Alex"), 600.0));
@@ -197,14 +223,6 @@ public class LeilaoTest {
         assertEquals(1, quantidadeLancesDevolvida);
     }
 
-    /*
-    (3)
-        Uma opção mais simples oferecida pela lib do JUnit é a de se utilizar o atributo "excepted"
-        junto à annotation "@Test", informando qual o tipo de objeto estamos esperando que o teste
-        tenha que capturar.
-        Dessa forma, não precisamos fazer uso de captura via bloco try/catch com verificação via
-        "Assert.fail()" ou a de instânciar um ExpcetecException e configurá-lo com a exceção esperada.
-     */
     @Test(expected = UsuarioJaDeuCincoLancesException.class)
     public void naoDeve_AdicionarLance_QuandoUsuarioDerCincoLances() {
         final Usuario fran = new Usuario("Fran");
