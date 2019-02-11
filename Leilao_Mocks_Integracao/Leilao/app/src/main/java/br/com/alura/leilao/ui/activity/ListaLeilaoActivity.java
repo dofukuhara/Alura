@@ -8,11 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.List;
-
 import br.com.alura.leilao.R;
 import br.com.alura.leilao.api.retrofit.client.LeilaoWebClient;
-import br.com.alura.leilao.api.retrofit.client.RespostaListener;
 import br.com.alura.leilao.model.Leilao;
 import br.com.alura.leilao.ui.AtualizadorDeLeiloes;
 import br.com.alura.leilao.ui.recyclerview.adapter.ListaLeilaoAdapter;

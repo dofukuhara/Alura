@@ -5,7 +5,6 @@ import android.content.Context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -22,7 +21,6 @@ import br.com.alura.leilao.ui.recyclerview.adapter.ListaLeilaoAdapter;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
