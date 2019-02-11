@@ -5,6 +5,7 @@ import android.content.Context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -19,7 +20,9 @@ import br.com.alura.leilao.model.Leilao;
 import br.com.alura.leilao.ui.recyclerview.adapter.ListaLeilaoAdapter;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,6 +33,8 @@ public class AtualizadorDeLeiloesTest {
     private ListaLeilaoAdapter adapter;
     @Mock
     private LeilaoWebClient client;
+    @Mock
+    private AtualizadorDeLeiloes.ErroCarregaLeiloesListener listener;
 
     @Test
     public void deve_AtualizarListaDeLeiloes_QuandoBuscarLeiloesDaApi() {
@@ -46,25 +51,30 @@ public class AtualizadorDeLeiloesTest {
             }
         }).when(client).todos(any(RespostaListener.class));
 
-        atualizador.buscaLeiloes(adapter, client, context);
+        atualizador.buscaLeiloes(adapter, client, listener);
 
-//        int quantidadeLeilioesDevolvida = adapter.getItemCount();
-//        assertThat(quantidadeLeilioesDevolvida, is(2));
-
-        /*
-            Não precisamos testar se o adapter contém o número de elementos após realizar todas essas
-            operações, pois a funcionalidade do Adapter já foi coberta em outros testes.
-            Além disso, não precisamos testar se a "API está funcinando", pois não é o escopo de
-            cobertura esperado, devemos apenas testar a unidade lógica que nosso código pretende atuar.
-            Então, ao verificar o método "buscaLeiloes()", vemos que o que ele faz é, invocar o método
-            "todos()" do RestClient (client) e invocar o método "atualiza()" do Adapter, passando como
-            parâmetro a lista de leilões que foi passada lá no "doAnswer()" (no ambiente simulado). Isso
-            é o que o teste abaixo cobre:
-         */
         verify(client).todos(any(RespostaListener.class));
         verify(adapter).atualiza(new ArrayList<Leilao>(Arrays.asList(
                 new Leilao("Computador"),
                 new Leilao("Carro"))));
     }
 
+    @Test
+    public void deve_ApresentarMensagemDeFalha_QuandoFalharBuscaDeLeiloes() {
+        AtualizadorDeLeiloes atualizador = new AtualizadorDeLeiloes();
+
+        doAnswer(new Answer() {
+                     @Override
+                     public Object answer(InvocationOnMock invocation) throws Throwable {
+                         RespostaListener<List<Leilao>> argument = invocation.getArgument(0);
+                         argument.falha(anyString());
+                         return null;
+                     }
+                 }
+        ).when(client).todos(any(RespostaListener.class));
+
+        atualizador.buscaLeiloes(adapter, client, listener);
+
+        verify(listener).erroAoCarregar(anyString());
+    }
 }

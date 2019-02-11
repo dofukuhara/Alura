@@ -22,6 +22,8 @@ import static br.com.alura.leilao.ui.activity.LeilaoConstantes.CHAVE_LEILAO;
 
 public class ListaLeilaoActivity extends AppCompatActivity {
 
+    private static final String MENSAGEM_AVISO_FALHA_AO_CARREGAR_LEILOES = "Não foi possível carregar os leilões";
+
     private static final String TITULO_APPBAR = "Leilões";
     private final LeilaoWebClient client = new LeilaoWebClient();
     private final AtualizadorDeLeiloes atualizadorDeLeiloes = new AtualizadorDeLeiloes();
@@ -67,9 +69,20 @@ public class ListaLeilaoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        atualizadorDeLeiloes.buscaLeiloes(adapter, client, this);
+        atualizadorDeLeiloes.buscaLeiloes(adapter, client,
+                new AtualizadorDeLeiloes.ErroCarregaLeiloesListener() {
+                    @Override
+                    public void erroAoCarregar(String mensagem) {
+                        mostraMensagemDeFalha();
+                    }
+                });
     }
 
+    public void mostraMensagemDeFalha() {
+        Toast.makeText(this,
+                MENSAGEM_AVISO_FALHA_AO_CARREGAR_LEILOES,
+                Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

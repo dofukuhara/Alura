@@ -139,5 +139,4 @@ public class LancesLeilaoActivity extends AppCompatActivity {
         descricao.setText(leilao.getDescricao());
     }
 
-
 }
