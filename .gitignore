@@ -35,3 +35,13 @@
 /Leilao_Mocks_Integracao/Leilao/.idea/misc.xml
 /Leilao_Mocks_Integracao/Leilao/.idea/vcs.xml
 /Leilao_Mocks_Integracao/Leilao/.idea/kotlinc.xml
+/AndroidRoom/*.iml
+/AndroidRoom/.gradle
+/AndroidRoom/.idea/caches
+/AndroidRoom/.idea/caches/build_file_checksums.ser
+/AndroidRoom/.idea/libraries
+/AndroidRoom/.idea/modules.xml
+/AndroidRoom/.idea/workspace.xml
+/AndroidRoom/build
+/AndroidRoom/captures
+/AndroidRoom/.externalNativeBuild
