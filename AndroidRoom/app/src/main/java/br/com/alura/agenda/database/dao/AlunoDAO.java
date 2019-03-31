@@ -4,13 +4,14 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
 import br.com.alura.agenda.model.Aluno;
 
 @Dao
-public interface RoomAlunoDAO {
+public interface AlunoDAO {
 
     /*
         Annotation '@Insert' informa ao Room que ele deverá implementar esse método como sendo uma
@@ -30,4 +31,6 @@ public interface RoomAlunoDAO {
     @Query("SELECT * FROM aluno")
     List<Aluno> todos();
 
+    @Update
+    void edita(Aluno aluno);
 }
