@@ -14,7 +14,7 @@ public class AgendaApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        criaAlunosDeTeste();
+        criaAlunos();
     }
 
     private void criaAlunosDeTeste() {
@@ -26,6 +26,7 @@ public class AgendaApplication extends Application {
     private void criaAlunos() {
         AgendaDatabase database = Room
                 .databaseBuilder(this, AgendaDatabase.class, "agenda.db")
+                .allowMainThreadQueries()
                 .build();
         RoomAlunoDAO dao = database.getRoomAlunoDAO();
 

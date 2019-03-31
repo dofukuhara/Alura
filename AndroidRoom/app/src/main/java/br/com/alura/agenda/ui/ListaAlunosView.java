@@ -24,8 +24,19 @@ public class ListaAlunosView {
         this.context = context;
         this.adapter = new ListaAlunosAdapter(this.context);
 
-        this.dao = Room.databaseBuilder(context, AgendaDatabase.class, "agenda.db")
-                .build().getRoomAlunoDAO();
+        /*
+            Por padrão o Room lança uma RuntimeExpection quando fazemos operações de DB na Mai Thread.
+            Isso porque operações em DB podem ser operações demoradas, que segurem a thread, o que
+            pode gerar uma ANR.
+            Mas, como estamos fazendo um exemplo simples, e vamos "garantir por nós mesmo" que queremos
+            fazer essa operação na Main Thread, podemos utilizar o método 'allowMainThreadQueries()'.
+            Dessa forma, podemos fazer operações de DB na MainThread e o Room não irá alarmar.
+         */
+        this.dao = Room
+                .databaseBuilder(context, AgendaDatabase.class, "agenda.db")
+                .allowMainThreadQueries()
+                .build()
+                .getRoomAlunoDAO();
     }
 
     public void confirmaRemocao(final MenuItem item) {
