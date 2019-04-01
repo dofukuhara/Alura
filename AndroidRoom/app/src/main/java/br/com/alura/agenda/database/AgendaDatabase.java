@@ -11,6 +11,9 @@ import br.com.alura.agenda.model.Aluno;
 /*
     Quando fazemos uma alteração na Entity (foi adicionado uma nova coluna 'Sobrenome'), devemos:
         - Incrementar a versão do Database
+        - Devemos definir um Migration ou utilizar o método 'fallbackToDestructiveMigration()'
+            - O 'fallbackToDestructiveMigration()' não é recomendado utilizar quando se está em prod
+            pois no caso de uma mudança no schema, todos os dados anteriores seram perdidos.
  */
 
 @Database(entities = {Aluno.class}, version = 2, exportSchema = false)
@@ -24,6 +27,7 @@ public abstract class AgendaDatabase extends RoomDatabase {
         return Room
                 .databaseBuilder(context, AgendaDatabase.class, NOME_BRANCO_DE_DADOS)
                 .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
                 .build();
     }
 }
