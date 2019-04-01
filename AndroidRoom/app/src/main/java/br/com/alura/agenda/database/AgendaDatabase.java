@@ -41,7 +41,22 @@ public abstract class AgendaDatabase extends RoomDatabase {
                                 4) Renomear a tabela nova com o nome da tabela antiga
                          */
 
-                        
+                        // 1) Criar nova tabela com as informações desejadas
+                        database.execSQL("CREATE TABLE IF NOT EXISTS `Aluno_novo` " +
+                                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                "`nome` TEXT, " +
+                                "`telefone` TEXT, " +
+                                "`email` TEXT)");
+
+                        // 2) Copiar dados da tabela antiga para a nova
+                        database.execSQL("INSERT INTO Aluno_novo (id, nome, telefone, email) " +
+                                "SELECT id, nome, telefone, email FROM Aluno");
+
+                        // 3) Remover a tabela antiga
+                        database.execSQL("DROP TABLE Aluno");
+
+                        // 4) Renomear a tabela nova com o nome da tabela antiga
+                        database.execSQL("ALTER TABLE Aluno_novo RENAME TO Aluno");
                     }
                 })
                 .build();
