@@ -21,7 +21,6 @@ public class FormularioAlunoActivity extends AppCompatActivity {
     private EditText campoNome;
     private EditText campoTelefone;
     private EditText campoEmail;
-//    private final AlunoDAO dao = new AlunoDAO();
     private AlunoDAO dao;
     private Aluno aluno;
 
