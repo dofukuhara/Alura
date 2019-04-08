@@ -45,3 +45,16 @@
 /AndroidRoom/build
 /AndroidRoom/captures
 /AndroidRoom/.externalNativeBuild
+/AndroidRoom_parte2/*.iml
+/AndroidRoom_parte2/app/*.iml
+/AndroidRoom_parte2/.gradle
+/AndroidRoom_parte2/.idea/caches
+/AndroidRoom_parte2/.idea/caches/build_file_checksums.ser
+/AndroidRoom_parte2/.idea/libraries
+/AndroidRoom_parte2/.idea/modules.xml
+/AndroidRoom_parte2/.idea/workspace.xml
+/AndroidRoom_parte2/app/build
+/AndroidRoom_parte2/build
+/AndroidRoom_parte2/captures
+/AndroidRoom_parte2/local.properties
+/AndroidRoom_parte2/.externalNativeBuild
