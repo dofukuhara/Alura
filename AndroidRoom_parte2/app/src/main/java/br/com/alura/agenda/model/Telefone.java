@@ -1,7 +1,10 @@
 package br.com.alura.agenda.model;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import static androidx.room.ForeignKey.CASCADE;
 
 @Entity
 public class Telefone {
@@ -10,6 +13,24 @@ public class Telefone {
     private int id;
     private String numero;
     private TipoTelefone tipo;
+
+    @ForeignKey(entity = Aluno.class,
+            parentColumns = "id",
+            childColumns = "alunoId",
+            onUpdate = CASCADE,
+            onDelete = CASCADE)
+    private int alunoId;
+
+    public int getAlunoId() {
+        return alunoId;
+    }
+
+    public void setAlunoId(int alunoId) {
+        this.alunoId = alunoId;
+    }
+
+    public Telefone() {
+    }
 
     public int getId() {
         return id;

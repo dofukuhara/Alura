@@ -16,7 +16,6 @@ public class Aluno implements Serializable {
     private String nome;
     private String email;
     private Calendar momentoDeCadastro = Calendar.getInstance();
-    private List<Telefone> telefones;
 
     public Calendar getMomentoDeCadastro() {
         return momentoDeCadastro;
