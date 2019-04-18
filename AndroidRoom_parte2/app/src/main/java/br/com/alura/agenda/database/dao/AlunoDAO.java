@@ -12,8 +12,14 @@ import br.com.alura.agenda.model.Aluno;
 
 @Dao
 public interface AlunoDAO {
+    /*
+        Para recuperar o ID da tupla criada, basta mudar o tipo do retorno do insert para long.
+        No caso, podemos utilizar tanto o tipo primitivo 'long', quanto o seu wrapper 'Long'.
+        Aqui, decidimos utilizar o wrapper, pois no obj Telefone, precisamos do ID do tipo int, então
+        utilizando o wrapper 'Long', podemos fazer o cast utilizando o método 'intValue()' do wrapper.
+     */
     @Insert
-    void salva(Aluno aluno);
+    Long salva(Aluno aluno);
 
     @Query("SELECT * FROM aluno")
     List<Aluno> todos();
