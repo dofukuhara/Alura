@@ -21,6 +21,7 @@ import java.io.File;
 
 import br.com.alura.agenda.dao.AlunoDAO;
 import br.com.alura.agenda.modelo.Aluno;
+import br.com.alura.agenda.tasks.InsereAlunoTask;
 
 public class FormularioActivity extends AppCompatActivity {
 
@@ -85,6 +86,9 @@ public class FormularioActivity extends AppCompatActivity {
                     dao.insere(aluno);
                 }
                 dao.close();
+
+                String webserverUrl = getResources().getString(R.string.local_webserver_url);
+                new InsereAlunoTask(aluno).execute(webserverUrl);
 
                 Toast.makeText(FormularioActivity.this, "Aluno " + aluno.getNome() + " salvo!", Toast.LENGTH_SHORT).show();
 

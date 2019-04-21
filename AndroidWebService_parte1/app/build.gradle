@@ -1,13 +1,20 @@
 apply plugin: 'com.android.application'
 
+
 android {
     compileSdkVersion 28
+
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
     defaultConfig {
         applicationId "br.com.alura.agenda"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+
+        resValue "string", "local_webserver_url", properties.getProperty("local.webserver.url", "http://localhost.8080")
     }
     buildTypes {
         release {
