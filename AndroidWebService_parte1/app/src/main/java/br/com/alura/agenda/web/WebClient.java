@@ -18,12 +18,6 @@ public class WebClient {
         return realizaConexao(json, endereco);
     }
 
-    public void insere(String webserverUrl, String json) {
-
-        String endereco = webserverUrl + "/api/aluno";
-        realizaConexao(json, endereco);
-    }
-
     @Nullable
     private String realizaConexao(String json, String endereco) {
         try {

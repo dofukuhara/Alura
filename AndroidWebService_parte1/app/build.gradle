@@ -4,8 +4,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
 
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
 
     defaultConfig {
         applicationId "br.com.alura.agenda"
@@ -14,7 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        resValue "string", "local_webserver_url", properties.getProperty("local.webserver.url", "http://localhost.8080")
+        buildConfigField "String", "LOCAL_WEBSERVER_URL", getBaseUrl()
     }
     buildTypes {
         release {
@@ -33,5 +32,13 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.5.0'
 }
 
+def getBaseUrl() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+    return properties.getProperty("local.webserver.url", "http://localhost.8080/api/")
+}
