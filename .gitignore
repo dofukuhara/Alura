@@ -65,3 +65,7 @@
 /AndroidWebService_parte1/.DS_Store
 /AndroidWebService_parte1/build
 /AndroidWebService_parte1/captures
+/AndroidWebService_LocalServer/database/main/db.lck
+/AndroidWebService_LocalServer/database/main/db.log
+/AndroidWebService_LocalServer/database/main/db.properties
+/AndroidWebService_LocalServer/database/main/db.script

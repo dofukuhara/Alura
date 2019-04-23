@@ -1,7 +1,0 @@
-/*C1*/SET SCHEMA SYSTEM_LOBS
-INSERT INTO BLOCKS VALUES(0,2147483647,0)
-COMMIT
-/*C11*/SET SCHEMA PUBLIC
-create table aluno (id varchar(255) not null, caminho_foto varchar(255), desativado integer not null, endereco varchar(255), id_cliente integer not null, modificacao timestamp, nome varchar(255), nota double, site varchar(255), telefone varchar(255), primary key (id))
-create table dispositivo (token varchar(255) not null, primary key (token))
-create table firebase_config (id bigint not null, url varchar(255), apikey varchar(255), primary key (id))
