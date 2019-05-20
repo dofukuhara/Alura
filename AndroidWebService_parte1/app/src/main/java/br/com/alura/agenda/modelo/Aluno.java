@@ -1,10 +1,18 @@
 package br.com.alura.agenda.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
-/**
- * Created by alura on 12/08/15.
+/*
+    No obj Aluno contido na lista que o servidor nos retorna, existem 2 itens que não estavam inicialmente
+    configurados no nosso objeto. São os atributos "desativado" e "idCliente".
+    Como esses itens não foram configurados, o Jackson quebra a nossa aplicação, pois ele não sabe como lidar
+    com esses atributos.
+    Uma solução é utilizar a annotation @JsonIgnoreProperties(ignoreUnknown = true). Dessa forma, os atributos
+    que estiverem no Json mas não configurados em nosso objeto serão descartados.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Aluno implements Serializable {
 
     private String id;
