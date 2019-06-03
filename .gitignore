@@ -87,3 +87,17 @@
 /AndroidWebService_parte3/app/google-services.json
 /AndroidWebService_parte3/.idea/caches/build_file_checksums.ser
 /AndroidWebService_parte3/.idea/caches/gradle_models.ser
+/AndroidArchComponents/*.iml
+/AndroidArchComponents/.gradle
+/AndroidArchComponents/local.properties
+/AndroidArchComponents/.idea/caches
+/AndroidArchComponents/.idea/libraries
+/AndroidArchComponents/.idea/modules.xml
+/AndroidArchComponents/.idea/workspace.xml
+/AndroidArchComponents/.idea/navEditor.xml
+/AndroidArchComponents/.idea/assetWizardSettings.xml
+/AndroidArchComponents/.DS_Store
+/AndroidArchComponents/build
+/AndroidArchComponents/captures
+/AndroidArchComponents/.externalNativeBuild
+/AndroidArchComponents_LocalServer/database/*
