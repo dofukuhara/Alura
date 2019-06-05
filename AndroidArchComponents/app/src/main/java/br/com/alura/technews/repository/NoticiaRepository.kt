@@ -12,44 +12,40 @@ class NoticiaRepository(
     private val webclient: NoticiaWebClient = NoticiaWebClient()
 ) {
 
-    /*
-        Aqui, fizemos com que o objeto liveData seja uma property
-        da classe, pois tendo essa referência salva na classe (e não
-        como um membro da função buscaTodos(), ao realizar a rotação da
-        tela, como o obj liveData já tem dados salvos e não houve mudança,
-        então a ViewModel já irá mandar o liveData para a Activity... não mostrando
-        assim aquela "tela branca" sem nenhum conteúdo, até que a busca pelo
-        repositório termine.
-     */
     val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>()
 
     fun buscaTodos(): LiveData<Resource<List<Noticia>?>> {
 
-        buscaInterno(quandoSucesso = {
+        val atualizaListaNoticias: (List<Noticia>) -> Unit = {
             noticiasEncontradas.value = Resource(dado = it)
-        })
-        buscaNaApi(
-            quandoSucesso = {
-                noticiasEncontradas.value = Resource(dado = it)
-            }, quandoFalha = {
+        }
+
+        buscaInterno(quandoSucesso = atualizaListaNoticias)
+        buscaNaApi(quandoSucesso = atualizaListaNoticias,
+            quandoFalha = { erro ->
                 val resourceAtual = noticiasEncontradas.value
-                val resourceCriado: Resource<List<Noticia>?> = if (resourceAtual != null) {
-                    Resource(dado = resourceAtual.dado, erro = it)
-                } else {
-                    Resource(dado = null, erro = it)
-                }
-                noticiasEncontradas.value = resourceCriado
+                val resourceDeFalha = criaResourceDeFalha<List<Noticia>?>(resourceAtual, erro)
+                noticiasEncontradas.value = resourceDeFalha
             })
 
         return noticiasEncontradas
     }
 
     fun salva(
-        noticia: Noticia,
-        quandoSucesso: (noticiaNova: Noticia) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        salvaNaApi(noticia, quandoSucesso, quandoFalha)
+        noticia: Noticia
+    ) : LiveData<Resource<Void?>> {
+
+        val liveData = MutableLiveData<Resource<Void?>>()
+
+        salvaNaApi(noticia,
+            quandoSucesso = {
+                liveData.value = Resource(dado = null)
+            },
+            quandoFalha = { erro ->
+                liveData.value = Resource(dado = null, erro = erro)
+            })
+
+        return liveData
     }
 
     fun remove(
@@ -60,12 +56,17 @@ class NoticiaRepository(
         removeNaApi(noticia, quandoSucesso, quandoFalha)
     }
 
-    fun edita(
-        noticia: Noticia,
-        quandoSucesso: (noticiaEditada: Noticia) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        editaNaApi(noticia, quandoSucesso, quandoFalha)
+    fun edita(noticia: Noticia) : LiveData<Resource<Void?>> {
+        val liveData = MutableLiveData<Resource<Void?>>()
+        editaNaApi(noticia,
+            quandoSucesso = {
+                liveData.value = Resource(dado = null)
+            },
+            quandoFalha = { erro ->
+                liveData.value = Resource(dado = null, erro = erro)
+            })
+
+        return liveData
     }
 
     fun buscaPorId(
