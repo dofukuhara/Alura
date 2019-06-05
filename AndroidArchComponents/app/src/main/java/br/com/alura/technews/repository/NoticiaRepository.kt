@@ -1,5 +1,7 @@
 package br.com.alura.technews.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.asynctask.BaseAsyncTask
 import br.com.alura.technews.database.dao.NoticiaDAO
 import br.com.alura.technews.model.Noticia
@@ -10,12 +12,36 @@ class NoticiaRepository(
     private val webclient: NoticiaWebClient = NoticiaWebClient()
 ) {
 
-    fun buscaTodos(
-        quandoSucesso: (List<Noticia>) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        buscaInterno(quandoSucesso)
-        buscaNaApi(quandoSucesso, quandoFalha)
+    /*
+        Aqui, fizemos com que o objeto liveData seja uma property
+        da classe, pois tendo essa referência salva na classe (e não
+        como um membro da função buscaTodos(), ao realizar a rotação da
+        tela, como o obj liveData já tem dados salvos e não houve mudança,
+        então a ViewModel já irá mandar o liveData para a Activity... não mostrando
+        assim aquela "tela branca" sem nenhum conteúdo, até que a busca pelo
+        repositório termine.
+     */
+    val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>()
+
+    fun buscaTodos(): LiveData<Resource<List<Noticia>?>> {
+
+        buscaInterno(quandoSucesso = {
+            noticiasEncontradas.value = Resource(dado = it)
+        })
+        buscaNaApi(
+            quandoSucesso = {
+                noticiasEncontradas.value = Resource(dado = it)
+            }, quandoFalha = {
+                val resourceAtual = noticiasEncontradas.value
+                val resourceCriado: Resource<List<Noticia>?> = if (resourceAtual != null) {
+                    Resource(dado = resourceAtual.dado, erro = it)
+                } else {
+                    Resource(dado = null, erro = it)
+                }
+                noticiasEncontradas.value = resourceCriado
+            })
+
+        return noticiasEncontradas
     }
 
     fun salva(
