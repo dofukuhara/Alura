@@ -18,4 +18,6 @@ class FormularioNoticiaViewModel(
             repository.salva(noticia)
         }
     }
+
+    fun buscaPorId(noticiaId: Long) = repository.buscaPorId(noticiaId)
 }
